@@ -26,14 +26,21 @@ class CompressionTests(unittest.TestCase):
         huff_coder = ReusableHuffman("AB")
         solution = {ETB_CHAR: '10', "A": '11', 'B': '0'}
         self.assertEqual(solution, huff_coder.get_encoding_map())
-        
+
     def test_constructor_t2(self) -> None:
         huff_coder = ReusableHuffman("ABBBCC")
         solution = {ETB_CHAR: '100', "A": '101', 'B': '0', 'C': '11'}
         self.assertEqual(solution, huff_coder.get_encoding_map())
-    
-    # [!] TODO: Write your own constructor tests with a larger variety of
-    # characters in the corpus here!
+
+    def test_constructor_t3(self) -> None:
+        huff_coder = ReusableHuffman("")
+        solution = {ETB_CHAR: ''}
+        self.assertEqual(solution, huff_coder.get_encoding_map())
+
+    def test_constructor_t4(self) -> None:
+        huff_coder = ReusableHuffman("ABABACCCCD")
+        solution = {ETB_CHAR: '1100', 'A': '10', 'B': '111', 'C': '0', 'D': '1101'}
+        self.assertEqual(solution, huff_coder.get_encoding_map())
     
     
     # Compression Tests
@@ -79,9 +86,17 @@ class CompressionTests(unittest.TestCase):
         compressed_message = huff_coder.compress_message("BABCBC")
         solution = bitstrings_to_bytes(['01010110', '11100000'])
         self.assertEqual(solution, compressed_message)
-        
-    # [!] TODO: Write your own compression tests with a greater variety of chars
-    # in the corpus
+
+
+    def test_compression_t5(self) -> None:
+        huff_coder = ReusableHuffman("ABABACCCCD")
+        # byte 0: 1011 1101 {ETB_CHAR: '1100', 'A': '10', 'B': '111', 'C': '0', 'D': '1101'}
+        # byte 1: 1110 0000
+        # byte 2: 1101 1100
+        # [!] no padding
+        compressed_message = huff_coder.compress_message("ABABACCCCD")
+        solution = bitstrings_to_bytes(['10111101', '11100000', '11011100'])
+        self.assertEqual(solution, compressed_message)
     
     
     # Decompression Tests
@@ -124,8 +139,6 @@ class CompressionTests(unittest.TestCase):
         compressed_msg: bytes = bitstrings_to_bytes(['01010110', '11100000'])
         self.assertEqual("BABCBC", huff_coder.decompress(compressed_msg))
         
-    # [!] TODO: Write your own decompression tests with a greater variety of chars
-    # in the corpus
-        
+
 if __name__ == '__main__':
     unittest.main()

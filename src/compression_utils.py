@@ -6,6 +6,7 @@ from byte_utils import *
 ETB_CHAR = "\x17"
 
 class HuffmanNode:
+    # >> [MC] Provide proper docstrings for ALL methods, including helpers you write (-1)
     def __init__(self, char: str, freq: int,
                  zero_child: Optional["HuffmanNode"] = None,
                  one_child: Optional["HuffmanNode"] = None):
@@ -28,6 +29,11 @@ class ReusableHuffman:
         self._build_huffman_trie(corpus)
 
     def _build_huffman_trie(self, corpus: str):
+        # >> [MC] Notice how bloated with code your constructor got? When so much is happening
+        # it's hard to see the constituent pieces, debug, and interpret. This would've been the
+        # perfect opportunity to decompose into helper methods that each took a part of the job:
+        # (0.5 off for each that there wasn't a helper made for): (a) Finding the character distribution,
+        # (b) building the Huffman Trie, (c) constructing the encoding map. (-0.5)
         # Create dict with freq, char values
         freq_dict: Dict[str, int] = dict()
         for char in corpus:
@@ -73,6 +79,7 @@ class ReusableHuffman:
                 self._generate_encoding_map(node.zero_child, code + '0')
             if node.one_child:
                 self._generate_encoding_map(node.one_child, code + '1')
+# >> [MC] Leave just a single newline between the end of one method and the start of the next
 
 
     def get_encoding_map(self) -> dict[str, str]:
@@ -115,6 +122,9 @@ class ReusableHuffman:
         decompressed_message = ''
 
         for bit in compressed_bits:
+            # >> [MC] Notice how your if-condition bodies are just two different assignments to
+            # the same variable? Usually this means that a ternary statement would be more appropriate
+            # to use here, e.g., thatVariable = true_val if (condition) else false_val
             if bit == '0':
                 current_node = current_node.zero_child
             else:
@@ -130,3 +140,22 @@ class ReusableHuffman:
                 current_node = self._huffman_trie_root
 
         return decompressed_message
+        
+# ===================================================
+# >>> [MC] Summary
+# 
+# ---------------------------------------------------
+# >>> [MC] Style Checklist
+# [X] = Good, [~] = Mixed bag, [ ] = Needs improvement
+# 
+# [X] Variables and helper methods named and used well
+# [~] Proper and consistent indentation and spacing
+# [ ] Proper JavaDocs provided for ALL methods
+# [X] Logic is adequately simplified
+# [X] Code repetition is kept to a minimum
+# ---------------------------------------------------
+# Correctness:       94.0 / 100 (-1.5 / missed test)
+# Mypy Penalty:         -5 (-5 if mypy wasn't clean)
+# Style Penalty:      -1.5
+# Total:             87.5 / 100
+# ===================================================
